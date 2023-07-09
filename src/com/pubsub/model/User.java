@@ -1,6 +1,6 @@
 package com.pubsub.model;
 
-public class User {
+public class User implements java.io.Serializable {
     public String username;
     public String password;
     public double walletBalance;

@@ -2,7 +2,6 @@ package com.pubsub.seller;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.List;
 import java.util.Scanner;
 
 import com.pubsub.EndUser;
@@ -22,9 +21,20 @@ public class Seller extends EndUser {
             Registry registry = LocateRegistry.getRegistry(connectionURL.split(":")[0],
                     Integer.parseInt(connectionURL.split(":")[1]));
             SellerBrokerInterface broker = (SellerBrokerInterface) registry.lookup("Broker");
+            while (self == null) {
+                String[] userPasswordSplit = inputCreds();
+                if (userPasswordSplit.length != 2) {
+                    System.out.println("Invalid credentials2");
+                    continue;
+                }
+                self = broker.getUser(userPasswordSplit[0], userPasswordSplit[1]);
+                if (self == null) {
+                    System.out.println("Invalid credentials");
+                }
+            }
             int choice = -1;
             while (choice < 3) {
-                System.out.print("Publisher Tuple Menu:\n1 To Add tuple\n2 To Select tuple\n3 To Exit\n" +
+                System.out.print("\n\nPublisher Menu:\n1 To Add tuple\n2 To Select tuple\n3 To Exit\n" +
                         "Enter your choice: ");
                 choice = scanner.nextInt();
                 scanner.nextLine(); // Consume newline character
@@ -35,6 +45,7 @@ public class Seller extends EndUser {
                         broker.addTuple(new Tuple(tupleName));
                         break;
                     case 2:
+                        System.out.println("Select from Tuples:");
                         printTuples(broker.getTuples());
                         System.out.print("Enter the tuple id: ");
                         int tupleId = scanner.nextInt();
@@ -52,11 +63,8 @@ public class Seller extends EndUser {
                             switch (SongChoice) {
                                 case 1:
                                     System.out.println("Songs:");
-                                    int j = 0;
                                     System.out.println("Name - Price");
-                                    for (Song song : broker.getTuple(selectedTupleName).songs) {
-                                        System.out.println((j++) + ". " + song);
-                                    }
+                                    printSongs(broker.getTuple(selectedTupleName).songs);
                                     break;
                                 case 2:
                                     System.out.print("Enter new song name: ");
@@ -84,10 +92,4 @@ public class Seller extends EndUser {
         }
     }
 
-    private void printTuples(List<Tuple> tuples) {
-        int i = 0;
-        for (Tuple tuple : tuples) {
-            System.out.print((i++) + ". " + tuple);
-        }
-    }
 }

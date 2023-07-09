@@ -93,13 +93,13 @@ public class Broker extends UnicastRemoteObject implements SellerBrokerInterface
 
     public void startExecution() {
         try {
-            System.out.println("Broker started [" + InetAddress.getLocalHost().getHostAddress()
-                    + ":" + startingPort
-                    + "]");
             int choice = -1;
             while (choice != 0) {
+                System.out.println("\n\nBroker started [" + InetAddress.getLocalHost().getHostAddress()
+                        + ":" + startingPort
+                        + "]");
                 System.out.print("0 Exit\n" +
-                        "1 List all publishers topics\n" +
+                        "1 List all Tuples\n" +
                         "2 List all Publishers\n" +
                         "3 List all Subscribers\n" +
                         "Enter your choice:");
@@ -109,6 +109,9 @@ public class Broker extends UnicastRemoteObject implements SellerBrokerInterface
                         System.out.println("List of all topics:");
                         for (Tuple item : tuples) {
                             System.out.println(item.name);
+                            for (Song song : item.songs) {
+                                System.out.println("\t" + song.name);
+                            }
                         }
                         break;
                     case 2:
@@ -121,7 +124,7 @@ public class Broker extends UnicastRemoteObject implements SellerBrokerInterface
                     case 3:
                         System.out.println("List of all subscribers:");
                         // print column names
-                        System.out.println("Username\t|\tWalletBalance");
+                        System.out.println("Username\t|\tWalletBalance\t");
                         for (User user : subscribers) {
                             System.out.println(user.username + "\t\t|\t\t" + user.walletBalance);
                         }
@@ -148,10 +151,10 @@ public class Broker extends UnicastRemoteObject implements SellerBrokerInterface
         }
     }
 
-    private void saveUserData(List<User> userList) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(DATA_FILENAME))) {
+    private void saveUserData(List<User> userList, boolean append) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(DATA_FILENAME, append))) {
             for (User user : userList) {
-                writer.write(user.toString());
+                writer.write(user.username + "|" + user.password + "|" + user.walletBalance + "|" + user.isPublisher);
                 writer.newLine();
             }
         } catch (IOException e) {
@@ -172,12 +175,18 @@ public class Broker extends UnicastRemoteObject implements SellerBrokerInterface
         if (song != null) {
             for (User user : subscribers) {
                 if (user.username.equals(customerName)) {
-                    user.walletBalance -= song.price;
-                    break;
+                    // check balance
+                    if (user.walletBalance < song.price) {
+                        return null;
+                    } else {
+                        song.copiesSold++;
+                        user.walletBalance -= song.price;
+                        saveUserData(publishers, false);
+                        saveUserData(subscribers, true);
+                        break;
+                    }
                 }
             }
-            saveUserData(publishers);
-            saveUserData(subscribers);
         }
         return song;
     }
