@@ -4,8 +4,8 @@ import java.rmi.RemoteException;
 import java.util.Scanner;
 
 import com.pubsub.broker.Broker;
-import com.pubsub.customer.Customer;
-import com.pubsub.seller.Seller;
+import com.pubsub.node.customer.Customer;
+import com.pubsub.node.seller.Seller;
 
 public class Driver {
     public static void main(String[] args) {

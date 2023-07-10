@@ -1,13 +1,13 @@
-package com.pubsub.seller;
+package com.pubsub.node.seller;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Scanner;
 
-import com.pubsub.EndUser;
 import com.pubsub.broker.remote.SellerBrokerInterface;
 import com.pubsub.model.Song;
 import com.pubsub.model.Tuple;
+import com.pubsub.node.EndUser;
 
 public class Seller extends EndUser {
 
@@ -72,7 +72,10 @@ public class Seller extends EndUser {
                                     System.out.print("Enter new song price: ");
                                     double songPrice = scanner.nextDouble();
                                     scanner.nextLine(); // Consume newline character
-                                    broker.addSong(selectedTupleName, new Song(songName, songPrice));
+                                    System.out.print("Enter new song length: ");
+                                    long songLength = scanner.nextLong();
+                                    scanner.nextLine(); // Consume newline character
+                                    broker.addSong(selectedTupleName, new Song(songName, songPrice, songLength));
                                     break;
                                 case 3:
                                     break;

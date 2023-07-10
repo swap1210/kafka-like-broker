@@ -1,4 +1,4 @@
-package com.pubsub;
+package com.pubsub.node;
 
 import java.util.List;
 import java.util.Scanner;

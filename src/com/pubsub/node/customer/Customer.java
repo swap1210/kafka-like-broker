@@ -1,4 +1,4 @@
-package com.pubsub.customer;
+package com.pubsub.node.customer;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -7,9 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import com.pubsub.EndUser;
 import com.pubsub.broker.remote.CustomerBrokerInterface;
 import com.pubsub.model.Song;
+import com.pubsub.node.EndUser;
+
 import java.rmi.NotBoundException;
 
 public class Customer extends EndUser {
