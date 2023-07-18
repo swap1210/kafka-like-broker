@@ -12,7 +12,9 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import com.pubsub.broker.remote.CustomerBrokerInterface;
@@ -24,7 +26,7 @@ import com.pubsub.model.User;
 public class Broker extends UnicastRemoteObject implements SellerBrokerInterface, CustomerBrokerInterface {
     private static final String DATA_FILENAME = "./resources/userData.txt";
     Scanner scanner;
-    List<Tuple> tuples;
+    Map<String, Tuple> tuples;
     List<User> publishers;
     List<User> subscribers;
     public int startingPort;
@@ -32,7 +34,7 @@ public class Broker extends UnicastRemoteObject implements SellerBrokerInterface
     public Broker(Scanner scanner, int startingPort) throws RemoteException {
         this.scanner = scanner;
         this.startingPort = startingPort;
-        this.tuples = new ArrayList<>();
+        this.tuples = new Hashtable<>();
         this.publishers = new ArrayList<>();
         this.subscribers = new ArrayList<>();
         loadUserData();
@@ -74,20 +76,22 @@ public class Broker extends UnicastRemoteObject implements SellerBrokerInterface
         }
     }
 
-    public void addTuple(Tuple item) throws RemoteException {
-        tuples.add(item);
+    public String addTuple(Tuple item) throws RemoteException {
+        if (this.tuples.containsKey(item.name)) {
+            return "Tuple already exists";
+        }
+        tuples.put(item.name, item);
+        return "Tuple added successfully";
     }
 
-    public Tuple getTuple(String itemName) throws RemoteException {
-        for (Tuple item : tuples) {
-            if (item.name.equals(itemName)) {
-                return item;
-            }
+    public Tuple getTuple(String tupleName) throws RemoteException {
+        if (this.tuples.containsKey(tupleName)) {
+            return this.tuples.get(tupleName);
         }
         return null;
     }
 
-    public List<Tuple> getTuples() throws RemoteException {
+    public Map<String, Tuple> getTuples() throws RemoteException {
         return tuples;
     }
 
@@ -107,7 +111,7 @@ public class Broker extends UnicastRemoteObject implements SellerBrokerInterface
                 switch (choice) {
                     case 1:
                         System.out.println("List of all topics:");
-                        for (Tuple item : tuples) {
+                        for (Tuple item : tuples.values()) {
                             System.out.println(item.name);
                             for (Song song : item.songs) {
                                 System.out.println("\t" + song.name);
@@ -143,11 +147,8 @@ public class Broker extends UnicastRemoteObject implements SellerBrokerInterface
 
     @Override
     public void addSong(String tupleName, Song song) throws RemoteException {
-        for (Tuple tuple : tuples) {
-            if (tuple.name.equals(tupleName)) {
-                tuple.songs.add(song);
-                break;
-            }
+        if (this.tuples.containsKey(tupleName)) {
+            this.tuples.get(tupleName).songs.add(song);
         }
     }
 
@@ -165,12 +166,7 @@ public class Broker extends UnicastRemoteObject implements SellerBrokerInterface
     @Override
     public synchronized Song purchaseSong(String customerName, String tupleName, int SongId) throws RemoteException {
         Song song = null;
-        for (Tuple tuple : tuples) {
-            if (tuple.name.equals(tupleName)) {
-                song = tuple.songs.get(SongId);
-                break;
-            }
-        }
+        song = getTuple(tupleName).songs.get(SongId);
 
         if (song != null) {
             for (User user : subscribers) {
@@ -205,4 +201,12 @@ public class Broker extends UnicastRemoteObject implements SellerBrokerInterface
         }
         return null;
     }
+
+    @Override
+    public void removeSong(String tupleName, int songId) throws RemoteException {
+        if (this.tuples.containsKey(tupleName)) {
+            this.tuples.get(tupleName).songs.remove(songId);
+        }
+    }
+
 }

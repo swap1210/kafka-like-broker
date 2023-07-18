@@ -49,14 +49,15 @@ public class Seller extends EndUser {
                         printTuples(broker.getTuples());
                         System.out.print("Enter the tuple id: ");
                         int tupleId = scanner.nextInt();
-                        String selectedTupleName = broker.getTuples().get(tupleId).name;
+                        String selectedTupleName = broker.getTuples().keySet().toArray(new String[0])[tupleId];
                         int SongChoice = -1;
                         while (SongChoice < 3) {
                             System.out.print(selectedTupleName
                                     + " tuple Selected\n" + //
                                     "1 To List Songs\n" + //
                                     "2 To Add Song\n" + //
-                                    "3 To Exit\n" + //
+                                    "3 To Remove Song\n" + //
+                                    "4 To Exit\n" + //
                                     "Enter your choice: ");
                             SongChoice = scanner.nextInt();
                             scanner.nextLine(); // Consume newline character
@@ -78,6 +79,14 @@ public class Seller extends EndUser {
                                     broker.addSong(selectedTupleName, new Song(songName, songPrice, songLength));
                                     break;
                                 case 3:
+                                    System.out.println("Songs:");
+                                    System.out.println("Name - Price");
+                                    printSongs(broker.getTuple(selectedTupleName).songs);
+                                    System.out.print("Enter song id to remove: ");
+                                    int songId = scanner.nextInt();
+                                    broker.removeSong(selectedTupleName, songId);
+                                    break;
+                                case 4:
                                     break;
                                 default:
                                     System.out.println("Invalid choice.");

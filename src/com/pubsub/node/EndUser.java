@@ -1,6 +1,7 @@
 package com.pubsub.node;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import com.pubsub.model.Song;
@@ -34,11 +35,11 @@ public abstract class EndUser {
         }
     }
 
-    public void printTuples(List<Tuple> tuples) {
+    public void printTuples(Map<String, Tuple> tuples) {
         System.out.println("Tuples:");
         int i = 0;
         System.out.println("Name");
-        for (Tuple tuple : tuples) {
+        for (Tuple tuple : tuples.values()) {
             System.out.println((i++) + ". " + tuple.name);
         }
     }
