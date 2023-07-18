@@ -42,7 +42,7 @@ public class Seller extends EndUser {
                     case 1:
                         System.out.print("Enter new tuple name: ");
                         String tupleName = scanner.nextLine();
-                        broker.addTuple(new Tuple(tupleName));
+                        System.out.println(broker.addTuple(new Tuple(tupleName)));
                         break;
                     case 2:
                         System.out.println("Select from Tuples:");
@@ -64,7 +64,6 @@ public class Seller extends EndUser {
                             switch (SongChoice) {
                                 case 1:
                                     System.out.println("Songs:");
-                                    System.out.println("Name - Price");
                                     printSongs(broker.getTuple(selectedTupleName).songs);
                                     break;
                                 case 2:
@@ -80,7 +79,6 @@ public class Seller extends EndUser {
                                     break;
                                 case 3:
                                     System.out.println("Songs:");
-                                    System.out.println("Name - Price");
                                     printSongs(broker.getTuple(selectedTupleName).songs);
                                     System.out.print("Enter song id to remove: ");
                                     int songId = scanner.nextInt();

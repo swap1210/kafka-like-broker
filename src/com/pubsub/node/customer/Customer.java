@@ -5,10 +5,12 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import com.pubsub.broker.remote.CustomerBrokerInterface;
 import com.pubsub.model.Song;
+import com.pubsub.model.Tuple;
 import com.pubsub.node.EndUser;
 
 import java.rmi.NotBoundException;
@@ -52,10 +54,15 @@ public class Customer extends EndUser {
                         printSongs(songs);
                         break;
                     case 2:
-                        printTuples(broker.getTuples());
+                        Map<String, Tuple> tuples = broker.getTuples();
+                        printTuples(tuples);
+                        if (tuples.size() == 0) {
+                            System.out.println("No tuples available");
+                            break;
+                        }
                         System.out.print("Enter the tuple id: ");
                         int tupleId = scanner.nextInt();
-                        String selectedTupleName = broker.getTuples().get(tupleId).name;
+                        String selectedTupleName = broker.getTuples().keySet().toArray(new String[0])[tupleId];
                         int songChoice = -1;
                         while (songChoice < 3) {
                             System.out.print("\n\n" + selectedTupleName

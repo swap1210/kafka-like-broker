@@ -15,7 +15,7 @@ public class Song implements java.io.Serializable {
 
     @Override
     public String toString() {
-        return "Song [" + name + "] " + price + "$, copiesSold:" + copiesSold + " length "
+        return "Song [" + name + "] " + price + "$, copies sold:" + copiesSold + " length "
                 + lengthInSeconds + " seconds";
     }
 }
